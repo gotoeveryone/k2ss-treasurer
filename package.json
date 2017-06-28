@@ -1,0 +1,32 @@
+{
+  "name": "k2ss-treasurer",
+  "version": "1.0.0",
+  "description": "K2SS treasurer management system.",
+  "main": "index.js",
+  "repository": "git@github.com:gotoeveryone/k2ss-treasurer.git",
+  "author": "Kazuki_Kamizuru <k.amago0721@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.8",
+    "buble": "^0.15.2",
+    "buble-loader": "^0.4.1",
+    "css-loader": "^0.28.3",
+    "eslint": "4.1.1",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "node-sass": "^4.5.2",
+    "npm-run-all": "^4.0.2",
+    "sass-lint": "^1.10.2",
+    "sass-loader": "^6.0.5",
+    "style-loader": "^0.18.1",
+    "vue": "^2.3.2",
+    "vue-cookie": "^1.1.4",
+    "vue-loader": "^12.0.2",
+    "vue-resource": "^1.2.1",
+    "vue-template-compiler": "^2.3.2",
+    "vuex": "2.3.1",
+    "webpack": "2.6.1"
+  }
+}

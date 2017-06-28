@@ -1,0 +1,13 @@
+logs
+target
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
+/public/javascripts
+/public/stylesheets
+/.ensime
+/.ensime_cache
+/node_modules
