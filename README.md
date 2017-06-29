@@ -13,6 +13,7 @@
 以下コマンドを実行してください。
 
 ```
+$ sbt playUpdateSecret
 $ sbt run
 ```
 

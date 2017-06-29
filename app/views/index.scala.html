@@ -1,5 +1,21 @@
-@(header: String)
+@(loginForm: Form[LoginForm])(implicit messages: Messages, request: RequestHeader)
 
-@main("Welcome to Play") {
-  <h1>Welcome to @header!</h1>
+@import helper._
+
+@main("Top") {
+  @form(action = routes.UsersController.login()) {
+    @CSRF.formField
+    <ul class="login">
+        <li class="row">
+          @inputText(loginForm("account"))
+        </li>
+        <li class="row">
+          @inputPassword(loginForm("password"))
+        </li>
+        <li class="row">
+          <button type="submit" value="login">ログイン</button>
+          <button type="reset" value="reset">リセット</button>
+        </li>
+    </ul>
+  }
 }
