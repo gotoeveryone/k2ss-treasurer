@@ -8,7 +8,9 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.12.2"
 
 libraryDependencies += guice
+libraryDependencies += ws
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0"
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "info.k2ss.controllers._"

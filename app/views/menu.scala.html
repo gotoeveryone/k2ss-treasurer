@@ -1,5 +1,7 @@
+@(user: models.User)
+
 @main("メニュー") {
   <div>
-    これはメニュー
+    @user.userId - @user.userName
   </div>
 }
