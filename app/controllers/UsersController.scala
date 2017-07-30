@@ -90,7 +90,7 @@ class UsersController @Inject()(conf: Configuration, cc: ControllerComponents,
   /**
    * ユーザ表示処理
    */
-  def users() = Action.async { implicit request: Request[AnyContent] =>
-    dao.all().map(users => Ok(views.html.users(users)))
-  }
+  // def users() = Action.async { implicit request: Request[AnyContent] =>
+  //   dao.all().map(users => Ok(views.html.users(users)))
+  // }
 }
