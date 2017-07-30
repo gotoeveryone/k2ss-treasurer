@@ -7,10 +7,15 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.12.2"
 
-libraryDependencies += guice
-libraryDependencies += ws
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0"
+libraryDependencies ++= Seq(
+    guice,
+    ws,
+    "com.typesafe.play" %% "play-slick" % "3.0.0",
+    "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0",
+    "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test,
+    "com.typesafe.play" %% "play-json" % "2.6.0",
+    "mysql" % "mysql-connector-java" % "5.1.36"
+)
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "info.k2ss.controllers._"

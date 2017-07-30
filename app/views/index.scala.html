@@ -1,16 +1,17 @@
-@(loginForm: Form[forms.LoginForm])(implicit messages: Messages, request: RequestHeader)
+@(loginForm: Form[forms.LoginForm])(implicit request: RequestHeader, messages: Messages, flash: Flash)
 
 @import helper._
 
 @main("Top") {
   @form(action = routes.UsersController.login()) {
     @CSRF.formField
+    @request.session.get("user")
     <ul class="login">
         <li class="row">
-          @inputText(loginForm("account"))
+          @inputText(loginForm("account"), '_label -> "ID", '_showConstraints -> false, 'maxlength -> 10)
         </li>
         <li class="row">
-          @inputPassword(loginForm("password"))
+          @inputPassword(loginForm("password"), '_label -> "パスワード", '_showConstraints -> false, 'maxlength -> 20)
         </li>
         <li class="row">
           <button type="submit" value="login">ログイン</button>

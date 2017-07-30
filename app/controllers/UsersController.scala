@@ -2,7 +2,6 @@ package controllers
 
 import javax.inject._
 import scala.concurrent._
-import scala.concurrent.duration.{ Duration, MILLISECONDS }
 import play.api._
 import play.api.data.Form
 import play.api.data.Forms._
@@ -10,23 +9,26 @@ import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc._
 import play.api.libs.ws._
 import play.api.libs.json._
+import play.api.db.slick._
+import slick.driver.JdbcProfile
+import slick.driver.MySQLDriver
 import forms._
 import models._
+import ExecutionContext.Implicits.global
 
 /**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
+ * ログイン用コントローラ
  */
 @Singleton
-class UsersController @Inject()(cc: ControllerComponents, ws: WSClient)
-  extends AbstractController(cc) with I18nSupport {
+class UsersController @Inject()(conf: Configuration, cc: ControllerComponents,
+  ws: WSClient, dao: UserDao, messagesApi: MessagesApi) extends AbstractController(cc) with I18nSupport {
 
   // ログインフォームを定義
   val loginForm = Form(
     mapping(
-      "account" -> text,
-      "password" -> text
-    )(forms.LoginForm.apply)(forms.LoginForm.unapply)
+      "account" -> nonEmptyText(6, 10),
+      "password" -> nonEmptyText(8, 20)
+    )(LoginForm.apply)(LoginForm.unapply)
   )
 
   /**
@@ -39,44 +41,56 @@ class UsersController @Inject()(cc: ControllerComponents, ws: WSClient)
   /**
    * ログイン処理
    */
-  def login() = Action { implicit request: Request[AnyContent] =>
+  def login() = Action.async { implicit request: Request[AnyContent] =>
     loginForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.index(loginForm)),
+      errors => Future(BadRequest(views.html.index(loginForm.bindFromRequest))),
       login => {
-        val apiUrl = play.Play.application.configuration.getString("api.path")
-        val future: Future[WSResponse] = ws
-          .url(apiUrl + "web-api/v1/auth/login")
-          .withHeaders("Content-Type" -> "application/json")
-          .post(Json.obj(
-            "account" -> loginForm.bindFromRequest.get.account,
-            "password" -> loginForm.bindFromRequest.get.password
-          ))
+        val apiUrl = conf.get[String]("api.path")
 
-        // 結果からアクセストークンを取得
-        val result = Await.result(future, Duration(5000, MILLISECONDS))
-        print(result.status)
+        val params = Json.obj(
+          "account" -> loginForm.bindFromRequest.get.account,
+          "password" -> loginForm.bindFromRequest.get.password
+        )
 
-        if (result.status != 200) {
-          Unauthorized(views.html.index(loginForm))
-        } else {
-          val token: JsResult[String] = (Json.parse(result.body) \ "access_token")
-            .validate[String]
+        // 認証エラーメッセージ
+        val flash = Flash(Map("error" -> "aaaaa"))
 
-          val userFuture: Future[WSResponse] = ws
-            .url(apiUrl + "web-api/v1/users")
-            .withHeaders("Authorization" -> ("Bearer " + token.get))
-            .withHeaders("Content-Type" -> "application/json")
-            .get()
+        // 認証
+        ws.url(apiUrl + "web-api/v1/auth/login")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(params).flatMap {result =>
+            result.status match {
+              case 200 => {
+                val token: JsResult[String] = (Json.parse(result.body) \ "access_token")
+                  .validate[String]
 
-          val userResult = Await.result(userFuture, Duration(5000, MILLISECONDS))
-          print(userResult.status)
-          if (userResult.status != 200) {
-            BadRequest(views.html.index(loginForm))
-          } else {
-            Ok(views.html.menu(Json.parse(userResult.body).as[models.User]))
+                // トークンを利用してユーザ情報を取得
+                ws.url(apiUrl + "web-api/v1/users")
+                  .addHttpHeaders("Content-Type" -> "application/json")
+                  .addHttpHeaders("Authorization" -> ("Bearer " + token.get))
+                  .get().flatMap {result => 
+                    result.status match {
+                      case 200 => {
+                          // ユーザオブジェクト生成
+                          val user = Json.parse(result.body).as[User]
+                          Future(Ok(views.html.menu(user))
+                            .withSession("user" -> user.userName))
+                      }
+                      case _ => Future(Unauthorized(views.html.index(loginForm)))
+                    }
+                  }
+              }
+              case _ => Future(Unauthorized(views.html.index(loginForm)))
+            }
           }
-        }
       }
     )
+  }
+
+  /**
+   * ユーザ表示処理
+   */
+  def users() = Action.async { implicit request: Request[AnyContent] =>
+    dao.all().map(users => Ok(views.html.users(users)))
   }
 }

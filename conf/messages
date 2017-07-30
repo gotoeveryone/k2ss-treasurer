@@ -1,1 +1,4 @@
 # https://www.playframework.com/documentation/latest/ScalaI18N
+error.required=入力必須です
+error.minLength={0} 文字以上で入力してください。
+error.maxLength={0} 文字以下で入力してください。
