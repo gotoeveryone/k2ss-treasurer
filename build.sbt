@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
     "com.typesafe.play" %% "play-slick-evolutions" % "3.0.0",
     "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test,
     "com.typesafe.play" %% "play-json" % "2.6.0",
-    "mysql" % "mysql-connector-java" % "5.1.36"
+    "mysql" % "mysql-connector-java" % "5.1.+",
+    "ch.qos.logback" % "logback-classic" % "1.2.+"
 )
 
 // Adds additional packages into Twirl
