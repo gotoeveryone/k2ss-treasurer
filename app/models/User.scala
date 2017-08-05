@@ -2,11 +2,10 @@ package models
 
 import javax.inject._
 import scala.concurrent._
-import play.api.libs.functional.syntax._
 import play.api.db.slick._
 import play.api.libs.json._
 import slick.jdbc.JdbcProfile
-import play.api.db.slick._
+
 
 /**
  * ユーザ
@@ -14,7 +13,7 @@ import play.api.db.slick._
 case class User(id: Int, userId: String, userName: String)
 
 object User {
-    implicit val userJsonFormat = Json.format[User]
+    implicit val userFormat = Json.format[User]
 }
 
 class UserDao @Inject()(dp: DatabaseConfigProvider) extends HasDatabaseConfig[JdbcProfile] {

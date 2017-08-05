@@ -7,5 +7,8 @@
 GET     /                           controllers.UsersController.index
 POST    /login                      controllers.UsersController.login
 
+GET     /tradings                   controllers.TradingsController.index
+POST    /tradings                   controllers.TradingsController.add
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

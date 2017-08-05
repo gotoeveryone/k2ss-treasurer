@@ -8,6 +8,7 @@ import play.api.data.Forms._
 import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc._
 import play.api.libs.ws._
+import play.api.libs.ws.JsonBodyWritables._
 import play.api.libs.json._
 import play.api.db.slick._
 import slick.driver.JdbcProfile
@@ -68,7 +69,7 @@ class UsersController @Inject()(conf: Configuration, cc: ControllerComponents,
                 ws.url(apiUrl + "web-api/v1/users")
                   .addHttpHeaders("Content-Type" -> "application/json")
                   .addHttpHeaders("Authorization" -> ("Bearer " + token.get))
-                  .get().flatMap {result => 
+                  .get().flatMap {result =>
                     result.status match {
                       case 200 => {
                           // ユーザオブジェクト生成
@@ -86,11 +87,4 @@ class UsersController @Inject()(conf: Configuration, cc: ControllerComponents,
       }
     )
   }
-
-  /**
-   * ユーザ表示処理
-   */
-  // def users() = Action.async { implicit request: Request[AnyContent] =>
-  //   dao.all().map(users => Ok(views.html.users(users)))
-  // }
 }
