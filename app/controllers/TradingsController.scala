@@ -59,9 +59,9 @@ class TradingsController @Inject()(conf: Configuration, cc: ControllerComponents
                 val now = Timestamp.valueOf(LocalDateTime.now())
                 val newRec = Trading(input.account_id, input.traded,
                     input.name, input.means, input.payment_due_date, input.summary,
-                    input.suppliers, input.payment, input.distribution_ratios, now, now)
+                    input.suppliers, input.payment, input.distribution_ratios)
                 val id = dao.save(newRec).map(io => io.toInt)
-        dao.all().map(results => Ok(views.html.tradings(form, results)))
+                dao.all().map(results => Ok(views.html.tradings(form, results)))
             }
         )
     }

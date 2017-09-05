@@ -12,11 +12,16 @@ case class Common(id: Int, create: String, modified: String)
 
 case class Trading(account_id: Int, traded: String, name: Option[String], means: Option[String],
     payment_due_date: Option[String], summary: Option[String], suppliers: Option[String],
-    payment: Int, distribution_ratios: Option[Int], create: Timestamp, modified: Timestamp)
+    payment: Int, distribution_ratios: Option[Int])
 
-class TradingDao @Inject()(dp: DatabaseConfigProvider) extends HasDatabaseConfig[JdbcProfile] {
-    val dbConfig = dp.get[JdbcProfile]
-    import driver.api._
+object Trading {
+    implicit val userFormat = Json.format[Trading]
+}
+
+class TradingDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+    extends HasDatabaseConfigProvider[JdbcProfile] {
+
+    import profile.api._
 
     private val tradings = TableQuery[Tradings]
 
@@ -31,15 +36,14 @@ class TradingDao @Inject()(dp: DatabaseConfigProvider) extends HasDatabaseConfig
         def suppliers = column[Option[String]]("suppliers")
         def payment = column[Int]("payment")
         def distribution_ratios = column[Option[Int]]("distribution_ratios")
-        def created = column[Timestamp]("created")
-        def modified = column[Timestamp]("modified")
+        // def created = column[Timestamp]("created")
+        // def modified = column[Timestamp]("modified")
 
         def * = (account_id, traded, name, means, payment_due_date,
-            summary, suppliers, payment, distribution_ratios,
-            created, modified) <> (Trading.tupled, Trading.unapply)
+            summary, suppliers, payment, distribution_ratios) <> ((Trading.apply _).tupled, Trading.unapply)
     }
 
-    def all(): Future[Seq[Trading]] = dbConfig.db.run(tradings.result)
+    def all(): Future[Seq[Trading]] = db.run(tradings.result)
 
     def save(trading: Trading) = {
         db.run(tradings.insertOrUpdate(trading))
