@@ -16,9 +16,9 @@ object User {
     implicit val userFormat = Json.format[User]
 }
 
-class UserDao @Inject()(dp: DatabaseConfigProvider) extends HasDatabaseConfig[JdbcProfile] {
-    val dbConfig = dp.get[JdbcProfile]
-    import driver.api._
+class UserDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+    extends HasDatabaseConfigProvider[JdbcProfile] {
+    import profile.api._
 
     private val users = TableQuery[UsersTable]
 

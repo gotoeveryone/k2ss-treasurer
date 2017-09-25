@@ -1,9 +1,6 @@
 package controllers
 
 import javax.inject._
-import java.sql.Date
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import scala.concurrent._
 import play.api._
 import play.api.data.Form
@@ -14,11 +11,9 @@ import play.api.libs.ws._
 import play.api.libs.ws.JsonBodyWritables._
 import play.api.libs.json._
 import play.api.db.slick._
-import slick.driver.JdbcProfile
-import slick.driver.MySQLDriver
+import ExecutionContext.Implicits.global
 import forms._
 import models._
-import ExecutionContext.Implicits.global
 
 /**
  * 取引用コントローラ
@@ -29,15 +24,15 @@ class TradingsController @Inject()(conf: Configuration, cc: ControllerComponents
 
     val form = Form(
         mapping(
-            "account_id" -> number(0),
+            "accountId" -> number(0),
             "traded" -> nonEmptyText(10),
             "name" -> optional(text(0, 20)),
             "means" -> optional(text(0, 20)),
-            "payment_due_date" -> optional(text(0, 20)),
+            "paymentDueDate" -> optional(text(0, 20)),
             "summary" -> optional(text(0, 20)),
             "suppliers" -> optional(text(0, 20)),
             "payment" -> number(0, 9999999),
-            "distribution_ratios" -> optional(number(0, 1))
+            "distributionRatios" -> optional(number(0, 1))
         )(TradingForm.apply)(TradingForm.unapply)
     )
 
@@ -49,18 +44,29 @@ class TradingsController @Inject()(conf: Configuration, cc: ControllerComponents
     }
 
     /**
+     * 初期処理
+     */
+    def search() = Action.async { implicit request: Request[AnyContent] =>
+        form.bindFromRequest.fold(
+            error => dao.all().map(results =>
+                BadRequest(views.html.tradings(form.bindFromRequest, results))),
+            success => {
+                val input = form.bindFromRequest().get
+                dao.filter(input).map(results => Ok(views.html.tradings(form, results)))
+            }
+        )
+    }
+
+    /**
      * 登録処理
      */
     def add() = Action.async { implicit request =>
         form.bindFromRequest.fold(
-            error => Future(Redirect(routes.TradingsController.index, 400)),
+            error => dao.all().map(results =>
+                BadRequest(views.html.tradings(form.bindFromRequest, results))),
             success => {
                 val input = form.bindFromRequest().get
-                val now = Timestamp.valueOf(LocalDateTime.now())
-                val newRec = Trading(input.account_id, input.traded,
-                    input.name, input.means, input.payment_due_date, input.summary,
-                    input.suppliers, input.payment, input.distribution_ratios)
-                val id = dao.save(newRec).map(io => io.toInt)
+                dao.save(input).map(io => io.toInt).map(id => Logger.info(s"追加しました。ID=$id"))
                 dao.all().map(results => Ok(views.html.tradings(form, results)))
             }
         )

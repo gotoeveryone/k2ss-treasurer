@@ -8,19 +8,19 @@
         @request.session.get("user")
         <ul class="search-header">
             <li class="search-row">
-                @inputText(inputForm("account_id"), '_label -> "勘定科目", '_showConstraints -> false)
+                @inputText(inputForm("accountId"), '_label -> "勘定科目", '_showConstraints -> false)
                 @inputDate(inputForm("traded"), '_label -> "取引日", '_showConstraints -> false, 'maxlength -> 20)
                 @inputText(inputForm("name"), '_label -> "取引名", '_showConstraints -> false, 'maxlength -> 20)
                 @inputText(inputForm("means"), '_label -> "取引手段", '_showConstraints -> false)
             </li>
             <li class="search-row">
-                @inputDate(inputForm("payment_due_date"), '_label -> "支払予定日", '_showConstraints -> false, 'maxlength -> 20)
+                @inputDate(inputForm("paymentDueDate"), '_label -> "支払予定日", '_showConstraints -> false, 'maxlength -> 20)
                 @inputText(inputForm("summary"), '_label -> "摘要", '_showConstraints -> false, 'maxlength -> 20)
                 @inputText(inputForm("suppliers"), '_label -> "取引先", '_showConstraints -> false, 'maxlength -> 20)
             </li>
             <li class="search-row">
                 @inputText(inputForm("payment"), '_label -> "金額", '_showConstraints -> false, 'max -> 9999999, 'type -> "number")
-                @inputText(inputForm("distribution_ratios"), '_label -> "按分率", '_showConstraints -> false, 'max -> 1, 'type -> "number")
+                @inputText(inputForm("distributionRatios"), '_label -> "按分率", '_showConstraints -> false, 'max -> 1, 'type -> "number")
             </li>
             <li class="search-row">
                 <button type="submit" value="add">登録</button>

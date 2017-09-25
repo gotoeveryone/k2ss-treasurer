@@ -6,7 +6,7 @@ play.filters.hosts {
 }
 play.http.secret.key=${?SECRET_KEY}
 
-api.path="http://localhost/"
+api.path="https://api.atmark-k2ss.com/v1/"
 
 slick.dbs.default.driver = "slick.driver.MySQLDriver$"
 slick.dbs.default.db.driver="com.mysql.jdbc.Driver"
